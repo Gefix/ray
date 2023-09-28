@@ -59,11 +59,21 @@ def test_get_test_targets() -> None:
 
 
 def test_get_all_test_query() -> None:
-    assert _get_all_test_query(["a", "b"], "core", "") == (
+    assert _get_all_test_query(["a", "b"], "core") == (
         "attr(tags, 'team:core\\\\b', tests(a) union tests(b))"
     )
-    assert _get_all_test_query(["a"], "core", "tag") == (
+    assert _get_all_test_query(["a"], "core", except_tags="tag") == (
         "attr(tags, 'team:core\\\\b', tests(a)) except (attr(tags, tag, tests(a)))"
+    )
+    assert _get_all_test_query(["a"], "core", include_tags="tag") == (
+        "attr(tags, 'team:core\\\\b', tests(a)) intersect (attr(tags, tag, tests(a)))"
+    )
+    assert _get_all_test_query(
+        ["a"], "core", except_tags="tag1", include_tags="tag2"
+    ) == (
+        "attr(tags, 'team:core\\\\b', tests(a)) "
+        "except (attr(tags, tag1, tests(a))) "
+        "intersect (attr(tags, tag2, tests(a)))"
     )
 
 

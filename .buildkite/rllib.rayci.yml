@@ -1,0 +1,8 @@
+group: rllib tests
+steps:
+  - label: ":brain: rllib: benchmarks"
+    instance_type: medium
+    commands:
+      - bazel run //ci/ray_ci:test_in_docker -- //rllib/... rllib --include-tags torch_2.x_only_benchmark
+    depends_on: rllibbuild
+    job_env: forge

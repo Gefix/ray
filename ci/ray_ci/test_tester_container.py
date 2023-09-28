@@ -1,7 +1,7 @@
 import sys
 import pytest
 from unittest import mock
-from typing import List
+from typing import List, Optional
 
 from ci.ray_ci.tester_container import TesterContainer
 from ci.ray_ci.utils import chunk_into_n
@@ -55,6 +55,7 @@ def test_run_tests() -> None:
     def _mock_run_tests_in_docker(
         test_targets: List[str],
         test_envs: List[str],
+        test_arg: Optional[str] = None,
     ) -> MockPopen:
         return MockPopen(test_targets)
 

@@ -6,3 +6,38 @@ steps:
       - bazel run //ci/ray_ci:test_in_docker -- //rllib/... rllib --include-tags torch_2.x_only_benchmark
     depends_on: rllibbuild
     job_env: forge
+
+  - label: ":brain: rllib: learning tests TF2-static-graph"
+    instance_type: large
+    commands:
+      - bazel run //ci/ray_ci:test_in_docker -- //rllib/... rllib 
+        --parallelism-per-worker 3
+        --include-tags learning_tests_discrete,crashing_cartpole,stateless_cartpole,learning_tests_continuous 
+        --except-tags fake_gpus,torch_only,tf2_only,no_tf_static_graph
+        --test-arg --framework=tf
+    depends_on: rllibbuild
+    job_env: forge
+
+  - label: ":brain: rllib: learning tests TF2-eager-tracing"
+    parallelism: 2
+    instance_type: large
+    commands:
+      - bazel run //ci/ray_ci:test_in_docker -- //rllib/... rllib 
+        --workers "$${BUILDKITE_PARALLEL_JOB_COUNT}" --worker-id "$${BUILDKITE_PARALLEL_JOB}" --parallelism-per-worker 3
+        --include-tags learning_tests_discrete,crashing_cartpole,stateless_cartpole,learning_tests_continuous 
+        --except-tags fake_gpus,torch_only,tf2_only,no_tf_static_graph
+        --test-arg --framework=tf2
+    depends_on: rllibbuild
+    job_env: forge
+
+  - label: ":brain: rllib: learning tests Pytorch"
+    parallelism: 2
+    instance_type: large
+    commands:
+      - bazel run //ci/ray_ci:test_in_docker -- //rllib/... rllib 
+        --workers "$${BUILDKITE_PARALLEL_JOB_COUNT}" --worker-id "$${BUILDKITE_PARALLEL_JOB}" --parallelism-per-worker 3
+        --include-tags learning_tests_discrete,crashing_cartpole,stateless_cartpole,learning_tests_continuous 
+        --except-tags fake_gpus,torch_only,tf2_only,no_tf_static_graph
+        --test-arg --framework=torch
+    depends_on: rllibbuild
+    job_env: forge
